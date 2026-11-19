@@ -2,10 +2,7 @@ package com.raices_del_valle.model;
 
 import com.raices_del_valle.enums.Rol;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "usuario")
 public class Usuario {
@@ -36,10 +34,12 @@ public class Usuario {
     @Column(nullable = false)
     private String contrasena;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Rol rol = Rol.CLIENTE;
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean estado = true;
 
