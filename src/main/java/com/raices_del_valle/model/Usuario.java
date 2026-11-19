@@ -33,7 +33,7 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 100)
     private String correo;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String contrasena;
 
     @Enumerated(EnumType.STRING)
