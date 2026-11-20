@@ -45,4 +45,15 @@ public class Usuario {
 
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;
+
+    @PrePersist
+    protected void alCrear() {
+        if (this.fechaRegistro == null) {
+            this.fechaRegistro = LocalDateTime.now();
+        }
+
+        if (this.estado == null) {
+            this.estado = true;
+        }
+    }
 }
