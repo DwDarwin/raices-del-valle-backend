@@ -1,7 +1,7 @@
 package com.raices_del_valle.controller;
 
+import com.raices_del_valle.dto.usuario.ActualizarPerfilRequestDTO;
 import com.raices_del_valle.dto.usuario.CambiarContrasenaRequestDTO;
-import com.raices_del_valle.dto.usuario.UsuarioActualizarRequestDTO;
 import com.raices_del_valle.dto.usuario.UsuarioResponseDTO;
 import com.raices_del_valle.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -26,7 +26,7 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizarPerfil(
             @PathVariable Integer id,
-            @Valid @RequestBody UsuarioActualizarRequestDTO request) {
+            @Valid @RequestBody ActualizarPerfilRequestDTO request) {
         return ResponseEntity.ok(usuarioService.actualizarPerfil(id, request));
     }
 
@@ -43,7 +43,6 @@ public class UsuarioController {
         usuarioService.desactivarCuenta(id);
         return ResponseEntity.noContent().build();
     }
-
 
     /*
      * Admin endpoints

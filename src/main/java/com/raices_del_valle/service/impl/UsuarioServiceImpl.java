@@ -1,7 +1,7 @@
 package com.raices_del_valle.service.impl;
 
+import com.raices_del_valle.dto.usuario.ActualizarPerfilRequestDTO;
 import com.raices_del_valle.dto.usuario.CambiarContrasenaRequestDTO;
-import com.raices_del_valle.dto.usuario.UsuarioActualizarRequestDTO;
 import com.raices_del_valle.dto.usuario.UsuarioResponseDTO;
 import com.raices_del_valle.model.Usuario;
 import com.raices_del_valle.repository.UsuarioRepository;
@@ -35,7 +35,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioResponseDTO actualizarPerfil(Integer id, UsuarioActualizarRequestDTO request) {
+    public UsuarioResponseDTO actualizarPerfil(Integer id, ActualizarPerfilRequestDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 

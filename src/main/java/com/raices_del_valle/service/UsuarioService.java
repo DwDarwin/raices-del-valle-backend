@@ -1,14 +1,14 @@
 package com.raices_del_valle.service;
 
+import com.raices_del_valle.dto.usuario.ActualizarPerfilRequestDTO;
 import com.raices_del_valle.dto.usuario.CambiarContrasenaRequestDTO;
-import com.raices_del_valle.dto.usuario.UsuarioActualizarRequestDTO;
 import com.raices_del_valle.dto.usuario.UsuarioResponseDTO;
 
 import java.util.List;
 
 public interface UsuarioService {
 
-    UsuarioResponseDTO actualizarPerfil(Integer id, UsuarioActualizarRequestDTO request);
+    UsuarioResponseDTO actualizarPerfil(Integer id, ActualizarPerfilRequestDTO request);
 
     void cambiarContrasena(Integer id, CambiarContrasenaRequestDTO request);
 
