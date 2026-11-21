@@ -1,8 +1,7 @@
 package com.raices_del_valle.service.impl;
 
+import com.raices_del_valle.dto.usuario.CambiarContrasenaDTO;
 import com.raices_del_valle.dto.usuario.UsuarioActualizarDTO;
-import com.raices_del_valle.dto.usuario.UsuarioLoginRequestDTO;
-import com.raices_del_valle.dto.usuario.UsuarioRegistroDTO;
 import com.raices_del_valle.dto.usuario.UsuarioResponseDTO;
 import com.raices_del_valle.model.Usuario;
 import com.raices_del_valle.repository.UsuarioRepository;
@@ -11,6 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -24,43 +25,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    @Transactional
-    public UsuarioResponseDTO registrar(UsuarioRegistroDTO request) {
-
-        String correo = normalizarCorreo(request.getCorreo());
-
-        if (usuarioRepository.existsByCorreo(correo)) {
-            throw new IllegalArgumentException("El correo ya esta registrado");
-        }
-        if (usuarioRepository.existsByDocumento(request.getDocumento())) {
-            throw new IllegalArgumentException("El documento de identidad ya está registrado");
-        }
-
-        Usuario usuario = Usuario.builder()
-                .nombre(request.getNombre())
-                .documento(request.getDocumento())
-                .telefono(request.getTelefono())
-                .correo(correo)
-                .contrasena(passwordEncoder.encode(request.getContrasena()))
-                .build();
-
-        Usuario usuarioGuardado = usuarioRepository.save(usuario);
-        return toResponse(usuarioGuardado);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public UsuarioResponseDTO login(UsuarioLoginRequestDTO request) {
-        String correo = normalizarCorreo(request.getCorreo());
-        Usuario usuario = usuarioRepository.findByCorreo(correo)
-                .orElseThrow(() -> new IllegalArgumentException("Credenciales invalidas"));
+    public UsuarioResponseDTO obtenerPorId(Integer id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        if (!passwordEncoder.matches(request.getContrasena(), usuario.getContrasena())) {
-            throw new IllegalArgumentException("Credenciales invalidas");
-        }
-        if (!Boolean.TRUE.equals(usuario.getEstado())) {
-            throw new IllegalStateException("La cuenta no está activa");
-        }
         return toResponse(usuario);
     }
 
@@ -79,24 +48,26 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setTelefono(request.getTelefono());
         usuario.setCorreo(nuevoCorreo);
 
-        if (request.getContrasenaNueva() != null && !request.getContrasenaNueva().isBlank()) {
-            if (request.getContrasenaActual() == null || !passwordEncoder.matches(request.getContrasenaActual(), usuario.getContrasena())) {
-                throw new IllegalArgumentException("La contrasena actual es incorrecta");
-            }
-            usuario.setContrasena(passwordEncoder.encode(request.getContrasenaNueva()));
-        }
-
         Usuario usuarioActualizado = usuarioRepository.save(usuario);
         return toResponse(usuarioActualizado);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public UsuarioResponseDTO obtenerPorId(Integer id) {
+    @Transactional
+    public void cambiarContrasena(Integer id, CambiarContrasenaDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
 
-        return toResponse(usuario);
+        if (!passwordEncoder.matches(request.getContrasenaActual(), usuario.getContrasena())) {
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+        }
+
+        if (passwordEncoder.matches(request.getContrasenaNueva(), usuario.getContrasena())) {
+            throw new IllegalArgumentException("La nueva contraseña debe ser diferente a la actual");
+        }
+
+        usuario.setContrasena(passwordEncoder.encode(request.getContrasenaNueva()));
+        usuarioRepository.save(usuario);
     }
 
     @Override
@@ -107,6 +78,34 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuario.setEstado(false);
         usuarioRepository.save(usuario);
+    }
+
+    /**
+     * Admin methods
+     */
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsuarioResponseDTO> listarUsuarios() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO cambiarEstado(Integer id, Boolean estado) {
+        if (estado == null) {
+            throw new IllegalArgumentException("El estado es obligatorio");
+        }
+        
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
+
+        usuario.setEstado(estado);
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return toResponse(actualizado);
     }
 
     private String normalizarCorreo(String correo) {
