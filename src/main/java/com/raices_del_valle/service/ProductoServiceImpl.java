@@ -1,6 +1,5 @@
 package com.raices_del_valle.service;
 
-
 import com.raices_del_valle.dto.request.ProductoRequestDTO;
 import com.raices_del_valle.dto.response.ProductoResponseDTO;
 import com.raices_del_valle.model.Producto;
@@ -20,28 +19,29 @@ public class ProductoServiceImpl implements ProductoService{
 
     private final ProductoRepository productoRepository;
 
+
     @Override
     public ProductoResponseDTO guardarProducto(ProductoRequestDTO requestDTO) {
 
-        Producto producto = convertirAEntidad(requestDTO);
+        Producto producto = requestDTO.toEntity();
 
         Producto productoGuardado = productoRepository.save(producto);
 
-        return convertirAResponseDTO(productoGuardado);
+        return ProductoResponseDTO.fromEntity(productoGuardado);
     }
 
+
     @Override
-    //@Transactional(readOnly = true)
     public List<ProductoResponseDTO> listarProductos() {
 
         return productoRepository.findAll()
                 .stream()
-                .map(this::convertirAResponseDTO)
+                .map(ProductoResponseDTO::fromEntity)
                 .toList();
     }
 
+
     @Override
-   // @Transactional(readOnly = true)
     public ProductoResponseDTO buscarProductoPorId(Integer id) {
 
         Producto producto = productoRepository.findById(id)
@@ -50,31 +50,42 @@ public class ProductoServiceImpl implements ProductoService{
                         "Producto no encontrado con ID: " + id
                 ));
 
-        return convertirAResponseDTO(producto);
+        return ProductoResponseDTO.fromEntity(producto);
+    }
+    @Override
+    public List<ProductoResponseDTO> buscarPorNombre(String nombre) {
+
+        return productoRepository.findByNombreContainingIgnoreCase(nombre)
+                .stream()
+                .map(ProductoResponseDTO::fromEntity)
+                .toList();
+    }
+
+
+    @Override
+    public List<ProductoResponseDTO> filtrarPorCategoria(String categoria) {
+
+        return productoRepository.findByCategoriaIgnoreCase(categoria)
+                .stream()
+                .map(ProductoResponseDTO::fromEntity)
+                .toList();
     }
 
     @Override
-    //@Transactional(readOnly = true)
-    public List<ProductoResponseDTO> filtrarPorCategoria(String categoria) {
-        return productoRepository.findByCategoriaIgnoreCase(categoria)
-                .stream()
-                .map(this::convertirAResponseDTO)
-                .toList();
-    }
-    @Override
-    //@Transactional(readOnly = true)
     public List<ProductoResponseDTO> ordenarPorMayorPrecio() {
+
         return productoRepository.findAllByOrderByPrecioDesc()
                 .stream()
-                .map(this::convertirAResponseDTO)
+                .map(ProductoResponseDTO::fromEntity)
                 .toList();
     }
+
     @Override
-    //@Transactional(readOnly = true)
     public List<ProductoResponseDTO> ordenarPorMenorPrecio() {
+
         return productoRepository.findAllByOrderByPrecioAsc()
                 .stream()
-                .map(this::convertirAResponseDTO)
+                .map(ProductoResponseDTO::fromEntity)
                 .toList();
     }
 
@@ -83,25 +94,18 @@ public class ProductoServiceImpl implements ProductoService{
             Integer id,
             ProductoRequestDTO requestDTO) {
 
-        Producto producto = productoRepository.findById(id)
+        productoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Producto no encontrado con ID: " + id
                 ));
 
-        producto.setNombre(requestDTO.getNombre());
-        producto.setDescripcion(requestDTO.getDescripcion());
-        producto.setCategoria(requestDTO.getCategoria());
-        producto.setProductor(requestDTO.getProductor());
-        producto.setPrecio(requestDTO.getPrecio());
-        producto.setUnidadVenta(requestDTO.getUnidadVenta());
-        producto.setStock(requestDTO.getStock());
-        producto.setEstado(requestDTO.getEstado());
-        producto.setImagen(requestDTO.getImagen());
+        Producto producto = requestDTO.toEntity();
+        producto.setId(id);
 
         Producto productoActualizado = productoRepository.save(producto);
 
-        return convertirAResponseDTO(productoActualizado);
+        return ProductoResponseDTO.fromEntity(productoActualizado);
     }
 
     @Override
@@ -115,43 +119,5 @@ public class ProductoServiceImpl implements ProductoService{
         }
 
         productoRepository.deleteById(id);
-    }
-
-
-    // Convertir RequestDTO a entidad
-    private Producto convertirAEntidad(ProductoRequestDTO requestDTO) {
-
-        Producto producto = new Producto();
-
-        producto.setNombre(requestDTO.getNombre());
-        producto.setDescripcion(requestDTO.getDescripcion());
-        producto.setCategoria(requestDTO.getCategoria());
-        producto.setProductor(requestDTO.getProductor());
-        producto.setPrecio(requestDTO.getPrecio());
-        producto.setUnidadVenta(requestDTO.getUnidadVenta());
-        producto.setStock(requestDTO.getStock());
-        producto.setEstado(requestDTO.getEstado());
-        producto.setImagen(requestDTO.getImagen());
-
-        return producto;
-    }
-
-    // Convertir entidad a ResponseDTO
-    private ProductoResponseDTO convertirAResponseDTO(Producto producto) {
-
-        ProductoResponseDTO responseDTO = new ProductoResponseDTO();
-
-        responseDTO.setId(producto.getId());
-        responseDTO.setNombre(producto.getNombre());
-        responseDTO.setDescripcion(producto.getDescripcion());
-        responseDTO.setCategoria(producto.getCategoria());
-        responseDTO.setProductor(producto.getProductor());
-        responseDTO.setPrecio(producto.getPrecio());
-        responseDTO.setUnidadVenta(producto.getUnidadVenta());
-        responseDTO.setStock(producto.getStock());
-        responseDTO.setEstado(producto.getEstado());
-        responseDTO.setImagen(producto.getImagen());
-
-        return responseDTO;
     }
 }

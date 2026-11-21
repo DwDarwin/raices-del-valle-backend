@@ -3,9 +3,11 @@ package com.raices_del_valle.service;
 import com.raices_del_valle.dto.request.ProductoRequestDTO;
 import com.raices_del_valle.dto.response.ProductoResponseDTO;
 
+
 import java.util.List;
 
 public interface ProductoService {
+
 
     ProductoResponseDTO guardarProducto(ProductoRequestDTO requestDTO);
 
@@ -17,10 +19,11 @@ public interface ProductoService {
 
     void eliminarProducto(Integer id);
 
-
     List<ProductoResponseDTO> filtrarPorCategoria(String categoria);
 
     List<ProductoResponseDTO> ordenarPorMayorPrecio();
 
     List<ProductoResponseDTO> ordenarPorMenorPrecio();
+
+    List<ProductoResponseDTO> buscarPorNombre(String nombre);
 }

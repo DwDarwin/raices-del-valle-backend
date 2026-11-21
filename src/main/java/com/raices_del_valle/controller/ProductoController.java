@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "*")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -21,7 +20,7 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-
+    //para ADMIN
     @PostMapping
     public ResponseEntity<ProductoResponseDTO> guardarProducto(
             @RequestBody ProductoRequestDTO productoDTO) {
@@ -49,7 +48,15 @@ public class ProductoController {
                 productoService.buscarProductoPorId(id)
         );
     }
+    //buscar por nombre - para catalogo
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProductoResponseDTO>> buscarPorNombre(
+            @RequestParam String nombre) {
 
+        return ResponseEntity.ok(
+                productoService.buscarPorNombre(nombre)
+        );
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductoResponseDTO> actualizarProducto(
