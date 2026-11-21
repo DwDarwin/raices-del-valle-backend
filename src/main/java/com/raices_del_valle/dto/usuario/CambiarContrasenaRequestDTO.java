@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CambiarContrasenaDTO {
+public class CambiarContrasenaRequestDTO {
 
     @NotBlank(message = "La contraseña actual es obligatoria")
     private String contrasenaActual;

@@ -1,7 +1,7 @@
 package com.raices_del_valle.service.impl;
 
-import com.raices_del_valle.dto.usuario.CambiarContrasenaDTO;
-import com.raices_del_valle.dto.usuario.UsuarioActualizarDTO;
+import com.raices_del_valle.dto.usuario.CambiarContrasenaRequestDTO;
+import com.raices_del_valle.dto.usuario.UsuarioActualizarRequestDTO;
 import com.raices_del_valle.dto.usuario.UsuarioResponseDTO;
 import com.raices_del_valle.model.Usuario;
 import com.raices_del_valle.repository.UsuarioRepository;
@@ -35,7 +35,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioResponseDTO actualizarPerfil(Integer id, UsuarioActualizarDTO request) {
+    public UsuarioResponseDTO actualizarPerfil(Integer id, UsuarioActualizarRequestDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
@@ -54,7 +54,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public void cambiarContrasena(Integer id, CambiarContrasenaDTO request) {
+    public void cambiarContrasena(Integer id, CambiarContrasenaRequestDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
 
@@ -99,7 +99,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (estado == null) {
             throw new IllegalArgumentException("El estado es obligatorio");
         }
-        
+
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
 

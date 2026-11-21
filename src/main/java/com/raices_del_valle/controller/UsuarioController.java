@@ -1,7 +1,7 @@
 package com.raices_del_valle.controller;
 
-import com.raices_del_valle.dto.usuario.CambiarContrasenaDTO;
-import com.raices_del_valle.dto.usuario.UsuarioActualizarDTO;
+import com.raices_del_valle.dto.usuario.CambiarContrasenaRequestDTO;
+import com.raices_del_valle.dto.usuario.UsuarioActualizarRequestDTO;
 import com.raices_del_valle.dto.usuario.UsuarioResponseDTO;
 import com.raices_del_valle.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -26,14 +26,14 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizarPerfil(
             @PathVariable Integer id,
-            @Valid @RequestBody UsuarioActualizarDTO request) {
+            @Valid @RequestBody UsuarioActualizarRequestDTO request) {
         return ResponseEntity.ok(usuarioService.actualizarPerfil(id, request));
     }
 
     @PatchMapping("/{id}/contrasena")
     public ResponseEntity<Void> cambiarContrasena(
             @PathVariable Integer id,
-            @Valid @RequestBody CambiarContrasenaDTO request) {
+            @Valid @RequestBody CambiarContrasenaRequestDTO request) {
         usuarioService.cambiarContrasena(id, request);
         return ResponseEntity.noContent().build();
     }
