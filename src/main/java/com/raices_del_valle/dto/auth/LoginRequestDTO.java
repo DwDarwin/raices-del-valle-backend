@@ -1,4 +1,4 @@
-package com.raices_del_valle.dto.usuario;
+package com.raices_del_valle.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioLoginRequestDTO {
+public class LoginRequestDTO {
 
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El formato del correo no es valido")

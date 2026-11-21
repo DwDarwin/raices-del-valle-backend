@@ -2,7 +2,6 @@ package com.raices_del_valle.dto.usuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,13 +24,4 @@ public class UsuarioActualizarDTO {
     @Email(message = "El formato del correo electronico no es valido")
     @Size(max = 100, message = "El correo no puede superar los 100 caracteres")
     private String correo;
-
-    private String contrasenaActual;
-
-    @Pattern(
-            regexp = "^$|.{6,255}",
-            message = "La nueva contrasena debe tener entre 6 y 255 caracteres"
-    )
-    private String contrasenaNueva;
-
 }

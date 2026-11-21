@@ -1,4 +1,4 @@
-package com.raices_del_valle.dto.usuario;
+package com.raices_del_valle.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioRegistroDTO {
+public class RegistroRequestDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 120, message = "El nombre no puede superar los 120 caracteres")
