@@ -46,6 +46,7 @@ public class Pedido {
     protected void alCrear() {
         if (this.fechaPedido == null) {
             this.fechaPedido = LocalDateTime.now();
+
         }
     }
 }

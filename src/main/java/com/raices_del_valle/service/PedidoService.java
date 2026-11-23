@@ -1,19 +1,14 @@
 package com.raices_del_valle.service;
 
-import com.raices_del_valle.model.Pedido;
+import com.raices_del_valle.dto.request.PedidoRequestDTO;
+import com.raices_del_valle.dto.response.PedidoResponseDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface PedidoService {
-
-    List<Pedido> listarPedidos();
-
-    Optional<Pedido> buscarPorId(Integer id);
-
-    Optional<Pedido> buscarPorCodigoPedido(String codigoPedido);
-
-    Pedido guardarPedido(Pedido pedido);
-
+    PedidoResponseDTO crearPedido(PedidoRequestDTO request);
+    List<PedidoResponseDTO> listarPedidos();
+    PedidoResponseDTO buscarPorId(Integer id);
+    PedidoResponseDTO buscarPorCodigo(String codigoPedido);
     void eliminarPedido(Integer id);
 }

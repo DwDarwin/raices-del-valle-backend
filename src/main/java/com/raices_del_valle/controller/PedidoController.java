@@ -1,7 +1,9 @@
 package com.raices_del_valle.controller;
 
-import com.raices_del_valle.model.Pedido;
+import com.raices_del_valle.dto.request.PedidoRequestDTO;
+import com.raices_del_valle.dto.response.PedidoResponseDTO;
 import com.raices_del_valle.service.PedidoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,37 +18,29 @@ public class PedidoController {
 
     private final PedidoService pedidoService;
 
+    @PostMapping
+    public ResponseEntity<PedidoResponseDTO> crearPedido(@Valid @RequestBody PedidoRequestDTO request) {
+        PedidoResponseDTO creado = pedidoService.crearPedido(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    }
+
     @GetMapping
-    public ResponseEntity<List<Pedido>> listarPedidos() {
-        List<Pedido> pedidos = pedidoService.listarPedidos();
-        return ResponseEntity.ok(pedidos);
+    public ResponseEntity<List<PedidoResponseDTO>> listarPedidos() {
+        return ResponseEntity.ok(pedidoService.listarPedidos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pedido> buscarPorId(@PathVariable Integer id) {
-        return pedidoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PedidoResponseDTO> buscarPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(pedidoService.buscarPorId(id));
     }
 
-    @GetMapping("/codigo/{codigoPedido}")
-    public ResponseEntity<Pedido> buscarPorCodigo(@PathVariable String codigoPedido) {
-        return pedidoService.buscarPorCodigoPedido(codigoPedido)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public ResponseEntity<Pedido> crearPedido(@RequestBody Pedido pedido) {
-        Pedido guardado = pedidoService.guardarPedido(pedido);
-        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
+    @GetMapping("/codigo/{codigo}")
+    public ResponseEntity<PedidoResponseDTO> buscarPorCodigo(@PathVariable String codigo) {
+        return ResponseEntity.ok(pedidoService.buscarPorCodigo(codigo));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPedido(@PathVariable Integer id) {
-        if (pedidoService.buscarPorId(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
         pedidoService.eliminarPedido(id);
         return ResponseEntity.noContent().build();
     }
