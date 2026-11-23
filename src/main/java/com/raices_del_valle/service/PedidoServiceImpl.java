@@ -1,16 +1,14 @@
-package com.raices_del_valle.service.impl;
-
+package com.raices_del_valle.service;
 import com.raices_del_valle.dto.request.PedidoRequestDTO;
 import com.raices_del_valle.dto.response.PedidoResponseDTO;
-import com.raices_del_valle.entity.DetallePedido;
-import com.raices_del_valle.entity.Pedido;
-import com.raices_del_valle.entity.Producto;
-import com.raices_del_valle.entity.Usuario;
+import com.raices_del_valle.model.DetallePedido;
+import com.raices_del_valle.model.Pedido;
+import com.raices_del_valle.model.Producto;
+import com.raices_del_valle.model.Usuario;
 import com.raices_del_valle.repository.DetallePedidoRepository;
 import com.raices_del_valle.repository.PedidoRepository;
 import com.raices_del_valle.repository.ProductoRepository;
 import com.raices_del_valle.repository.UsuarioRepository;
-import com.raices_del_valle.service.PedidoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
