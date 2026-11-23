@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/api/detalles-pedido"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "idPedido": {{idPedido}},
+      "idProducto": {{idProducto}},
+      "cantidad": 1
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test("Responde 400", function () { pm.response.to.have.status(400); });
+    language: text/javascript
+order: 3000
