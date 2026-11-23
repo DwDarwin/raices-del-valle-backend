@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/registro"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Cliente Prueba",
+      "documento": "10203040",
+      "telefono": "3001234567",
+      "correo": "cliente.prueba@raices.com",
+      "contrasena": "clave123"
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test("Responde 201", function () { pm.response.to.have.status(201); });
+    language: text/javascript
+order: 1000

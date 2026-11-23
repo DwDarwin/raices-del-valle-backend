@@ -1,0 +1,7 @@
+$kind: collection
+description: "Pruebas del CRUD de detalle_pedido. Antes de correrla: crear un pedido en MySQL (ver datos_prueba_detalle_pedido.sql) y revisar las variables idPedido e idProducto."
+variables:
+  baseUrl: http://localhost:8080
+  idPedido: "1"
+  idProducto: "1"
+  idDetalle: "1"
