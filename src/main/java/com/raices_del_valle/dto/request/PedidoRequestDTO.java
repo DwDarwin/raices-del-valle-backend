@@ -1,4 +1,4 @@
-package com.raices_del_valle.dto;
+package com.raices_del_valle.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.raices_del_valle.dto;
+package com.raices_del_valle.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +32,7 @@ public class PedidoResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+
     public static class DetallePedidoResponseDTO {
         private Integer id;
         private Integer idProducto;
