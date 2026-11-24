@@ -34,10 +34,9 @@ public class Usuario {
     @Column(nullable = false)
     private String contrasena;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private Rol rol = Rol.CLIENTE;
+    @Column(name = "rol", nullable = false, length = 20)
+    private Rol rol;
 
     @Builder.Default
     @Column(nullable = false)

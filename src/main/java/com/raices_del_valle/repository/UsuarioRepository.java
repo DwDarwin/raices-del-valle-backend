@@ -16,4 +16,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Boolean existsByDocumento(String documento);
 
+    Optional<Usuario> findByDocumento(String documento);
+
 }
