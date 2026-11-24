@@ -1,7 +1,9 @@
 package com.raices_del_valle.controller;
 
+import com.raices_del_valle.dto.auth.AuthResponseDTO;
 import com.raices_del_valle.dto.auth.LoginRequestDTO;
 import com.raices_del_valle.dto.auth.RegistroRequestDTO;
+import com.raices_del_valle.dto.auth.RestablecerContrasenaRequestDTO;
 import com.raices_del_valle.dto.usuario.UsuarioResponseDTO;
 import com.raices_del_valle.service.AuthService;
 import jakarta.validation.Valid;
@@ -27,8 +29,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
-        UsuarioResponseDTO usuario = authService.login(request);
-        return ResponseEntity.ok(usuario);
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
+        AuthResponseDTO token = authService.login(request);
+        return ResponseEntity.ok(token);
+    }
+
+
+    @PostMapping("/restablecer-contrasena")
+    public ResponseEntity<String> restablecerContrasena(
+            @Valid @RequestBody RestablecerContrasenaRequestDTO request) {
+
+        authService.restablecerContrasena(request);
+
+        return ResponseEntity.ok(
+                "La contraseña se ha restablecido correctamente");
     }
 }
