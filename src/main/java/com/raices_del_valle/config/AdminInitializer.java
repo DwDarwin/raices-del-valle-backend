@@ -15,18 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class AdminInitializer {
 
-    /*
-    @Value("${admin.nombre}")
-    private String nombre;
-
-    @Value("${admin.documento}")
-    private String documento;
-
-    @Value("${admin.telefono}")
-    private String telefono;
-
-     */
-
     @Value("${admin.correo}")
     private String correo;
 
@@ -47,7 +35,7 @@ public class AdminInitializer {
 
             Usuario administrador = Usuario.builder()
                     .nombre("Administrador")
-                    .documento("123456789")
+                    .documento("999999999")
                     .telefono("3001234567")
                     .correo(correo.trim().toLowerCase())
                     .contrasena(passwordEncoder.encode(contrasena))
