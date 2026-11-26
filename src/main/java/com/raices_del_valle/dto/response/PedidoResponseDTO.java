@@ -23,6 +23,7 @@ public class PedidoResponseDTO {
     private String nombreUsuario;
     private BigDecimal subtotal;
     private BigDecimal descuento;
+    private BigDecimal costoEnvio;
     private BigDecimal total;
     private LocalDateTime fechaPedido;
     private List<DetallePedidoResponseDTO> detalles;
