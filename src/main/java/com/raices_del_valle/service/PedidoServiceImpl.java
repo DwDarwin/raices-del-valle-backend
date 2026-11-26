@@ -28,6 +28,9 @@ public class PedidoServiceImpl implements PedidoService {
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
 
+    private static final BigDecimal COSTO_ENVIO_BASE =
+            new BigDecimal("14000");
+
     @Override
     @Transactional
     public PedidoResponseDTO crearPedido(PedidoRequestDTO request) {
@@ -67,11 +70,20 @@ public class PedidoServiceImpl implements PedidoService {
 
             detalles.add(detalle);
         }
+        /*calculo del pedido incluyendo en costo de envio base*/
+        BigDecimal descuento = request.getDescuento() != null
+                ? request.getDescuento()
+                : BigDecimal.ZERO;
 
-        BigDecimal descuento = request.getDescuento() != null ? request.getDescuento() : BigDecimal.ZERO;
-        BigDecimal total = subtotalGeneral.subtract(descuento).max(BigDecimal.ZERO);
+        BigDecimal costoEnvio = COSTO_ENVIO_BASE;
+
+        BigDecimal total = subtotalGeneral
+                .subtract(descuento)
+                .max(BigDecimal.ZERO)
+                .add(costoEnvio);
 
         pedido.setSubtotal(subtotalGeneral);
+        pedido.setCostoEnvio(costoEnvio);
         pedido.setDescuento(descuento);
         pedido.setTotal(total);
 
@@ -137,6 +149,7 @@ public class PedidoServiceImpl implements PedidoService {
         response.setNombreUsuario(pedido.getUsuario().getNombre());
         response.setSubtotal(pedido.getSubtotal());
         response.setDescuento(pedido.getDescuento());
+        response.setCostoEnvio(pedido.getCostoEnvio());
         response.setTotal(pedido.getTotal());
         response.setFechaPedido(pedido.getFechaPedido());
         response.setDetalles(detallesDTO);
