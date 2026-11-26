@@ -36,6 +36,9 @@ public class Pedido {
     @Column(nullable = false, precision = 13, scale = 2)
     private BigDecimal descuento;
 
+    @Column(name = "costo_envio", nullable = false, precision = 13, scale = 2)
+    private BigDecimal costoEnvio;
+
     @Column(nullable = false, precision = 13, scale = 2)
     private BigDecimal total;
 
