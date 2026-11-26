@@ -46,6 +46,11 @@ public class Producto {
     @Column(columnDefinition = "LONGTEXT")
     private String imagen;
 
+    // Eliminación lógica: true = visible, false = eliminado (oculto).
+    // Es independiente de "estado" (PUBLICADO, BORRADOR, AGOTADO).
+    @Column(nullable = false)
+    private Boolean activo = true;
+
 
     public Producto(Integer id, String nombre, String descripcion, String categoria,
                     String productor, BigDecimal precio, String unidadVenta, Integer stock,

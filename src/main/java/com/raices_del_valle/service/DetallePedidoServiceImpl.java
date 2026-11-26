@@ -41,7 +41,7 @@ public class DetallePedidoServiceImpl implements DetallePedidoService {
         validarCantidad(request.getCantidad());
         Pedido pedido = pedidoRepository.findById(request.getIdPedido())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el pedido " + request.getIdPedido()));
-        Producto producto = productoRepository.findById(request.getIdProducto())
+        Producto producto = productoRepository.findByIdAndActivoTrue(request.getIdProducto())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el producto " + request.getIdProducto()));
 
         if (detallePedidoRepository.existsByPedidoIdAndProductoId(pedido.getId(), producto.getId())) {

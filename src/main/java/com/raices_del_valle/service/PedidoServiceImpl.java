@@ -43,7 +43,7 @@ public class PedidoServiceImpl implements PedidoService {
         List<DetallePedido> detalles = new ArrayList<>();
 
         for (PedidoRequestDTO.ItemPedidoRequestDTO item : request.getItems()) {
-            Producto producto = productoRepository.findById(item.getIdProducto())
+            Producto producto = productoRepository.findByIdAndActivoTrue(item.getIdProducto())
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + item.getIdProducto()));
 
             if (producto.getStock() < item.getCantidad()) {

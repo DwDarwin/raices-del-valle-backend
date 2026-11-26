@@ -34,7 +34,7 @@ public class ProductoServiceImpl implements ProductoService{
     @Override
     public List<ProductoResponseDTO> listarProductos() {
 
-        return productoRepository.findAll()
+        return productoRepository.findByActivoTrue()
                 .stream()
                 .map(ProductoResponseDTO::fromEntity)
                 .toList();
@@ -44,7 +44,7 @@ public class ProductoServiceImpl implements ProductoService{
     @Override
     public ProductoResponseDTO buscarProductoPorId(Integer id) {
 
-        Producto producto = productoRepository.findById(id)
+        Producto producto = productoRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Producto no encontrado con ID: " + id
@@ -55,7 +55,7 @@ public class ProductoServiceImpl implements ProductoService{
     @Override
     public List<ProductoResponseDTO> buscarPorNombre(String nombre) {
 
-        return productoRepository.findByNombreContainingIgnoreCase(nombre)
+        return productoRepository.findByNombreContainingIgnoreCaseAndActivoTrue(nombre)
                 .stream()
                 .map(ProductoResponseDTO::fromEntity)
                 .toList();
@@ -65,7 +65,7 @@ public class ProductoServiceImpl implements ProductoService{
     @Override
     public List<ProductoResponseDTO> filtrarPorCategoria(String categoria) {
 
-        return productoRepository.findByCategoriaIgnoreCase(categoria)
+        return productoRepository.findByCategoriaIgnoreCaseAndActivoTrue(categoria)
                 .stream()
                 .map(ProductoResponseDTO::fromEntity)
                 .toList();
@@ -74,7 +74,7 @@ public class ProductoServiceImpl implements ProductoService{
     @Override
     public List<ProductoResponseDTO> ordenarPorMayorPrecio() {
 
-        return productoRepository.findAllByOrderByPrecioDesc()
+        return productoRepository.findByActivoTrueOrderByPrecioDesc()
                 .stream()
                 .map(ProductoResponseDTO::fromEntity)
                 .toList();
@@ -83,7 +83,7 @@ public class ProductoServiceImpl implements ProductoService{
     @Override
     public List<ProductoResponseDTO> ordenarPorMenorPrecio() {
 
-        return productoRepository.findAllByOrderByPrecioAsc()
+        return productoRepository.findByActivoTrueOrderByPrecioAsc()
                 .stream()
                 .map(ProductoResponseDTO::fromEntity)
                 .toList();
@@ -94,7 +94,7 @@ public class ProductoServiceImpl implements ProductoService{
             Integer id,
             ProductoRequestDTO requestDTO) {
 
-        productoRepository.findById(id)
+        productoRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Producto no encontrado con ID: " + id
@@ -111,13 +111,15 @@ public class ProductoServiceImpl implements ProductoService{
     @Override
     public void eliminarProducto(Integer id) {
 
-        if (!productoRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Producto no encontrado con ID: " + id
-            );
-        }
+        Producto producto = productoRepository.findByIdAndActivoTrue(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Producto no encontrado con ID: " + id
+                ));
 
-        productoRepository.deleteById(id);
+        // Eliminación lógica: no se borra la fila (la usan pedidos y detalles),
+        // solo se marca como inactiva para ocultarla del catálogo y del admin.
+        producto.setActivo(false);
+        productoRepository.save(producto);
     }
 }

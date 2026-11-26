@@ -25,7 +25,8 @@ CREATE TABLE producto (
     unidad_venta VARCHAR(60) NOT NULL,
     stock INT NOT NULL,
     estado VARCHAR(20) NOT NULL,
-    imagen LONGTEXT
+    imagen LONGTEXT,
+    activo BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE pedido (
