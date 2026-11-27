@@ -1,6 +1,7 @@
 package com.raices_del_valle.service;
 import com.raices_del_valle.dto.request.PedidoRequestDTO;
 import com.raices_del_valle.dto.response.PedidoResponseDTO;
+import com.raices_del_valle.enums.EstadoPedido;
 import com.raices_del_valle.model.DetallePedido;
 import com.raices_del_valle.model.Pedido;
 import com.raices_del_valle.model.Producto;
@@ -121,6 +122,38 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     @Transactional
+    public PedidoResponseDTO actualizarEstado(Integer id, String estado) {
+
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Pedido no encontrado con ID: " + id));
+
+        // Convertir el texto recibido al enum.
+        EstadoPedido nuevoEstado;
+
+        try {
+            nuevoEstado = EstadoPedido.valueOf(
+                    estado.trim().toUpperCase()
+            );
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new IllegalArgumentException(
+                    "Estado de pedido no válido: " + estado
+            );
+        }
+
+        pedido.setEstado(nuevoEstado);
+
+        Pedido pedidoActualizado = pedidoRepository.save(pedido);
+
+
+        List<DetallePedido> detalles =
+                detallePedidoRepository.findByPedidoId(pedidoActualizado.getId());
+
+        return mapearAResponse(pedidoActualizado, detalles);
+    }
+
+    @Override
+    @Transactional
     public void eliminarPedido(Integer id) {
         if (!pedidoRepository.existsById(id)) {
             throw new RuntimeException("Pedido no encontrado con ID: " + id);
@@ -151,6 +184,7 @@ public class PedidoServiceImpl implements PedidoService {
         response.setDescuento(pedido.getDescuento());
         response.setCostoEnvio(pedido.getCostoEnvio());
         response.setTotal(pedido.getTotal());
+        response.setEstado(pedido.getEstado().name());
         response.setFechaPedido(pedido.getFechaPedido());
         response.setDetalles(detallesDTO);
 

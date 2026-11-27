@@ -1,9 +1,13 @@
 package com.raices_del_valle.model;
 
+import com.raices_del_valle.enums.EstadoPedido;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,6 +46,10 @@ public class Pedido {
     @Column(nullable = false, precision = 13, scale = 2)
     private BigDecimal total;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private EstadoPedido estado;
+
     @Column(name = "fecha_pedido")
     private LocalDateTime fechaPedido;
 
@@ -50,6 +58,10 @@ public class Pedido {
         if (this.fechaPedido == null) {
             this.fechaPedido = LocalDateTime.now();
 
+        }
+
+        if (this.estado == null) {
+            this.estado = EstadoPedido.PENDIENTE;
         }
     }
 }

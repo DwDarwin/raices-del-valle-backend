@@ -10,5 +10,6 @@ public interface PedidoService {
     List<PedidoResponseDTO> listarPedidos();
     PedidoResponseDTO buscarPorId(Integer id);
     PedidoResponseDTO buscarPorCodigo(String codigoPedido);
+    PedidoResponseDTO actualizarEstado(Integer id, String estado);
     void eliminarPedido(Integer id);
 }
