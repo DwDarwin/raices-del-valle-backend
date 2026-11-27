@@ -1,4 +1,5 @@
 package com.raices_del_valle.service;
+
 import com.raices_del_valle.dto.request.PedidoRequestDTO;
 import com.raices_del_valle.dto.response.PedidoResponseDTO;
 import com.raices_del_valle.model.DetallePedido;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -34,6 +37,19 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     @Transactional
     public PedidoResponseDTO crearPedido(PedidoRequestDTO request) {
+        if (request == null) {
+            throw new IllegalArgumentException("La solicitud del pedido no puede ser nula");
+        }
+
+        if (request.getIdUsuario() == null) {
+            throw new IllegalArgumentException("El ID del usuario es obligatorio");
+        }
+
+        // Impedir pedidos sin productos
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new IllegalArgumentException("El pedido debe contener al menos un producto");
+        }
+
         Usuario usuario = usuarioRepository.findById(request.getIdUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + request.getIdUsuario()));
 
@@ -44,21 +60,62 @@ public class PedidoServiceImpl implements PedidoService {
 
         BigDecimal subtotalGeneral = BigDecimal.ZERO;
         List<DetallePedido> detalles = new ArrayList<>();
+        Set<Integer> productosVistos = new HashSet<>();
 
         for (PedidoRequestDTO.ItemPedidoRequestDTO item : request.getItems()) {
+            if (item == null || item.getIdProducto() == null) {
+                throw new IllegalArgumentException("Cada ítem del pedido debe tener un ID de producto válido");
+            }
+
+            // 2. Evitar productos duplicados en el mismo pedido
+            if (!productosVistos.add(item.getIdProducto())) {
+                throw new IllegalArgumentException(
+                        "El producto con ID " + item.getIdProducto() + " está duplicado en el pedido"
+                );
+            }
+
+            // Impedir cantidades iguales o inferiores a cero
+            if (item.getCantidad() == null || item.getCantidad() <= 0) {
+                throw new IllegalArgumentException("La cantidad del producto debe ser mayor a cero");
+            }
+
             Producto producto = productoRepository.findByIdAndActivoTrue(item.getIdProducto())
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + item.getIdProducto()));
 
+            // 1. Validar que el producto esté PUBLICADO
+            if (producto.getEstado() == null || !"PUBLICADO".equalsIgnoreCase(producto.getEstado().trim())) {
+                throw new IllegalArgumentException(
+                        "El producto '" + producto.getNombre() + "' no está disponible para la venta (estado: " + producto.getEstado() + ")"
+                );
+            }
+
+            // 4. Validar stock no nulo y precio válido en BD
+            if (producto.getStock() == null) {
+                throw new IllegalStateException(
+                        "El producto '" + producto.getNombre() + "' no tiene un stock configurado"
+                );
+            }
+
+            if (producto.getPrecio() == null || producto.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalStateException(
+                        "El producto '" + producto.getNombre() + "' no tiene un precio válido"
+                );
+            }
+
             if (producto.getStock() < item.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre());
+                throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getNombre());
             }
 
             BigDecimal precioUnitario = producto.getPrecio();
             BigDecimal subtotalItem = precioUnitario.multiply(BigDecimal.valueOf(item.getCantidad()));
             subtotalGeneral = subtotalGeneral.add(subtotalItem);
 
-            // Actualizar stock del producto
-            producto.setStock(producto.getStock() - item.getCantidad());
+            // Actualizar stock del producto y marcar AGOTADO si llega a 0
+            int nuevoStock = producto.getStock() - item.getCantidad();
+            producto.setStock(nuevoStock);
+            if (nuevoStock == 0) {
+                producto.setEstado("AGOTADO");
+            }
             productoRepository.save(producto);
 
             DetallePedido detalle = new DetallePedido();
@@ -70,16 +127,25 @@ public class PedidoServiceImpl implements PedidoService {
 
             detalles.add(detalle);
         }
-        /*calculo del pedido incluyendo en costo de envio base*/
+
+        // Validar que el descuento no sea negativo ni superior al subtotal
         BigDecimal descuento = request.getDescuento() != null
                 ? request.getDescuento()
                 : BigDecimal.ZERO;
 
+        if (descuento.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("El descuento no puede ser negativo");
+        }
+
+        if (descuento.compareTo(subtotalGeneral) > 0) {
+            throw new IllegalArgumentException("El descuento no puede ser superior al subtotal del pedido");
+        }
+
+        /* calculo del pedido incluyendo el costo de envío base */
         BigDecimal costoEnvio = COSTO_ENVIO_BASE;
 
         BigDecimal total = subtotalGeneral
                 .subtract(descuento)
-                .max(BigDecimal.ZERO)
                 .add(costoEnvio);
 
         pedido.setSubtotal(subtotalGeneral);
