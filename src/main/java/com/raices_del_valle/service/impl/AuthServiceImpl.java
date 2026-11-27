@@ -130,42 +130,4 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    /*
-    @Override
-    @Transactional(readOnly = true)
-    public UsuarioResponseDTO login(LoginRequestDTO request) {
-
-        String correo = normalizarCorreo(request.getCorreo());
-
-        Usuario usuario = usuarioRepository.findByCorreo(correo)
-                .orElseThrow(() -> new IllegalArgumentException("Credenciales invalidas"));
-
-        if (!Boolean.TRUE.equals(usuario.getEstado())) {
-            throw new IllegalStateException("La cuenta está desactivada");
-        }
-
-        if (!passwordEncoder.matches(request.getContrasena(), usuario.getContrasena())) {
-            throw new IllegalArgumentException("Credenciales invalidas");
-        }
-        return toResponse(usuario);
-    }
-
-    private String normalizarCorreo(String correo) {
-        return correo == null ? null : correo.trim().toLowerCase();
-    }
-
-    private UsuarioResponseDTO toResponse(Usuario usuario) {
-        return UsuarioResponseDTO.builder()
-                .id(usuario.getId())
-                .nombre(usuario.getNombre())
-                .documento(usuario.getDocumento())
-                .telefono(usuario.getTelefono())
-                .correo(usuario.getCorreo())
-                .rol(usuario.getRol())
-                .estado(usuario.getEstado())
-                .fechaRegistro(usuario.getFechaRegistro())
-                .build();
-    }
-
-     */
 }

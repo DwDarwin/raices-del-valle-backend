@@ -25,6 +25,7 @@ public class PedidoResponseDTO {
     private BigDecimal descuento;
     private BigDecimal costoEnvio;
     private BigDecimal total;
+    private String estado;
     private LocalDateTime fechaPedido;
     private List<DetallePedidoResponseDTO> detalles;
 

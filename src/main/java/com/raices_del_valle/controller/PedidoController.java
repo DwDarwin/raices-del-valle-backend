@@ -1,5 +1,6 @@
 package com.raices_del_valle.controller;
 
+import com.raices_del_valle.dto.request.EstadoPedidoRequestDTO;
 import com.raices_del_valle.dto.request.PedidoRequestDTO;
 import com.raices_del_valle.dto.response.PedidoResponseDTO;
 import com.raices_del_valle.service.PedidoService;
@@ -8,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.util.List;
 
@@ -37,6 +41,17 @@ public class PedidoController {
     @GetMapping("/codigo/{codigo}")
     public ResponseEntity<PedidoResponseDTO> buscarPorCodigo(@PathVariable String codigo) {
         return ResponseEntity.ok(pedidoService.buscarPorCodigo(codigo));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<PedidoResponseDTO> actualizarEstado(
+            @PathVariable Integer id,
+            @Valid @RequestBody EstadoPedidoRequestDTO request) {
+
+        PedidoResponseDTO actualizado =
+                pedidoService.actualizarEstado(id, request.getEstado());
+
+        return ResponseEntity.ok(actualizado);
     }
 
     @DeleteMapping("/{id}")
