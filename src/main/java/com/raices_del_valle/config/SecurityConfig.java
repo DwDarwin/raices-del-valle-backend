@@ -1,5 +1,6 @@
 package com.raices_del_valle.config;
 
+import com.raices_del_valle.exception.ApiSecurityExceptionHandler;
 import com.raices_del_valle.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +25,12 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ApiSecurityExceptionHandler apiSecurityExceptionHandler;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          ApiSecurityExceptionHandler apiSecurityExceptionHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.apiSecurityExceptionHandler = apiSecurityExceptionHandler;
     }
 
     @Bean
@@ -79,6 +83,11 @@ public class SecurityConfig {
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(apiSecurityExceptionHandler)
+                        .accessDeniedHandler(apiSecurityExceptionHandler)
+                )
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
